@@ -42,6 +42,7 @@
                         <th>Documento</th>
                         <th>Placas</th>
                         <th>Mensualidad</th>
+                        <th>Pago</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -55,6 +56,12 @@
                             <span class="etiqueta-estado"
                                   th:classappend="${f.estadoMensualidad() == 'VIGENTE'} ? 'vigente' : (${f.estadoMensualidad() == 'VENCIDA'} ? 'vencida' : 'sin-mensualidad')"
                                   th:text="${f.estadoMensualidad() == 'VIGENTE'} ? 'Vigente' : (${f.estadoMensualidad() == 'VENCIDA'} ? 'Vencida' : 'Sin mensualidad')"></span>
+                        </td>
+                        <td>
+                            <span class="etiqueta-estado" th:if="${f.estadoPago() != 'SIN_MENSUALIDAD'}"
+                                  th:classappend="${f.estadoPago() == 'PAGADA'} ? 'vigente' : 'pendiente'"
+                                  th:text="${f.estadoPago() == 'PAGADA'} ? 'Pagada' : 'Pendiente'"></span>
+                            <span th:if="${f.estadoPago() == 'SIN_MENSUALIDAD'}">—</span>
                         </td>
                         <td>
                             <span class="etiqueta-estado"

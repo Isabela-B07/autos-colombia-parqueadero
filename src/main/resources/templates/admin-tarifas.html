@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tarifas - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('tarifas')}"></div>
+
+    <main class="contenido">
+        <h1>Tarifas de mensualidad</h1>
+        <p class="descripcion">Valor mensual por tipo de vehículo, en pesos</p>
+
+        <div th:if="${exito}" class="mensaje exito" th:text="${exito}"></div>
+        <div th:if="${error}" class="mensaje error" th:text="${error}"></div>
+
+        <section class="panel panel-ancho">
+            <h2>Tarifas actuales</h2>
+
+            <form th:action="@{/admin/tarifas}" method="post">
+                <div class="fila-form">
+                    <label for="carro">Carro</label>
+                    <input type="number" id="carro" name="carro" class="campo-form"
+                           min="1" step="1" th:value="${carro}" placeholder="Ej. 150000">
+                </div>
+
+                <div class="fila-form">
+                    <label for="moto">Moto</label>
+                    <input type="number" id="moto" name="moto" class="campo-form"
+                           min="1" step="1" th:value="${moto}" placeholder="Ej. 60000">
+                </div>
+
+                <p class="ayuda">
+                    Un cliente con varios vehículos paga la suma de la tarifa de cada uno.
+                    Si cambias una tarifa, los pagos ya registrados no se modifican.
+                </p>
+
+                <div class="acciones">
+                    <button type="submit" class="boton">Guardar tarifas</button>
+                </div>
+            </form>
+        </section>
+    </main>
+</div>
+</body>
+</html>

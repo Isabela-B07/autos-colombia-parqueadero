@@ -35,8 +35,8 @@ public class ClienteService {
     }
 
     // Una fila del listado de clientes (CU-16)
-    public record FilaCliente(Integer id, String nombre, String documento, String placas,
-                              String estadoMensualidad, boolean activo) {
+        public record FilaCliente(Integer id, String nombre, String documento, String placas,
+                              String estadoMensualidad, String estadoPago, boolean activo) {
     }
 
         private final ClienteRepository clienteRepository;
@@ -45,6 +45,7 @@ public class ClienteService {
     private final MensualidadRepository mensualidadRepository;
     private final MovimientoRepository movimientoRepository;
     private final NovedadRepository novedadRepository;   // NUEVO
+    private final PagoService pagoService;
     private final ValidacionPlacaService validacionPlacaService;
 
     public ClienteService(ClienteRepository clienteRepository,
@@ -52,8 +53,10 @@ public class ClienteService {
                           VehiculoRepository vehiculoRepository,
                           MensualidadRepository mensualidadRepository,
                           MovimientoRepository movimientoRepository,
-                          NovedadRepository novedadRepository,   // NUEVO
+                                                    NovedadRepository novedadRepository,   // NUEVO
+                          PagoService pagoService,
                           ValidacionPlacaService validacionPlacaService) {
+        this.pagoService = pagoService;
         this.clienteRepository = clienteRepository;
         this.usuarioRepository = usuarioRepository;
         this.vehiculoRepository = vehiculoRepository;
@@ -196,7 +199,8 @@ public class ClienteService {
             .map(Vehiculo::getPlaca)
             .collect(Collectors.joining(", "));
         return new FilaCliente(c.getIdUsuario(), c.getNombre(), c.getDocumento(),
-                               placas, estadoMensualidad(c.getIdUsuario()), c.isActivo());
+                               placas, estadoMensualidad(c.getIdUsuario()),
+                               pagoService.estadoPago(c.getIdUsuario()), c.isActivo());
     }
 
     private void validarDatosBasicos(String nombre, String documento) {

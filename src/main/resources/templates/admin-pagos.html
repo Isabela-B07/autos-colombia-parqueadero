@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pagos - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('pagos')}"></div>
+
+    <main class="contenido">
+        <h1>Pagos</h1>
+        <p class="descripcion">Historial de pagos de mensualidades</p>
+
+        <div th:if="${exito}" class="mensaje exito" th:text="${exito}"></div>
+        <div th:if="${error}" class="mensaje error" th:text="${error}"></div>
+
+        <!-- Filtros (CU-29) -->
+        <form th:action="@{/admin/pagos}" method="get" class="filtros-historial filtros-celdas">
+            <div>
+                <label for="q">Cliente</label>
+                <input type="text" id="q" name="q" class="campo-form" th:value="${q}"
+                       placeholder="Nombre o documento" autocomplete="off">
+            </div>
+            <div>
+                <label for="desde">Desde</label>
+                <input type="date" id="desde" name="desde" class="campo-form" th:value="${desde}">
+            </div>
+            <div>
+                <label for="hasta">Hasta</label>
+                <input type="date" id="hasta" name="hasta" class="campo-form" th:value="${hasta}">
+            </div>
+            <div>
+                <label for="medio">Medio de pago</label>
+                <select id="medio" name="medio" class="campo-form">
+                    <option value="" th:selected="${medioFiltro == ''}">Todos</option>
+                    <option th:each="m : ${medios}" th:value="${m.name()}"
+                            th:text="${m.name() == 'EFECTIVO'} ? 'Efectivo' : (${m.name() == 'TRANSFERENCIA'} ? 'Transferencia' : 'Tarjeta')"
+                            th:selected="${m.name() == medioFiltro}"></option>
+                </select>
+            </div>
+            <button type="submit" class="boton-buscar">Filtrar</button>
+            <a class="boton-limpiar" th:href="@{/admin/pagos}">Limpiar</a>
+        </form>
+
+        <!-- Listado -->
+        <section class="tarjeta-form">
+            <h2>Pagos registrados</h2>
+
+            <p th:if="${#lists.isEmpty(filas)}">No se encontraron pagos.</p>
+            <table class="tabla" th:unless="${#lists.isEmpty(filas)}">
+                <thead>
+                    <tr>
+                        <th>N.º</th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Periodo</th>
+                        <th>Valor</th>
+                        <th>Medio</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="f : ${filas}">
+                        <td th:text="${f.numero()}"></td>
+                        <td th:text="${f.fecha()}"></td>
+                        <td>
+                            <span th:text="${f.cliente()}"></span><br>
+                            <small th:text="${f.documento()}"></small>
+                        </td>
+                        <td th:text="${f.periodo()}"></td>
+                        <td th:text="'$ ' + ${#numbers.formatDecimal(f.valor(), 1, 'POINT', 0, 'COMMA')}"></td>
+                        <td th:text="${f.medio()}"></td>
+                        <td>
+                            <span class="etiqueta-estado"
+                                  th:classappend="${f.anulado()} ? 'vencida' : 'vigente'"
+                                  th:text="${f.anulado()} ? 'Anulado' : 'Activo'"></span>
+                        </td>
+                        <td>
+                            <div class="acciones-fila">
+                                <a th:href="@{/admin/pagos/{id}(id=${f.numero()})}">Ver comprobante</a>
+                                <!-- Solo se puede anular un pago activo (CU-30) -->
+                                <form th:unless="${f.anulado()}"
+                                      th:action="@{/admin/pagos/{id}/anular(id=${f.numero()})}"
+                                      method="post" class="form-anular"
+                                      th:attr="data-numero=${f.numero()}">
+                                    <input type="hidden" name="motivo" value="">
+                                    <button type="submit" class="enlace-boton peligro">Anular</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+</div>
+
+<script>
+    // Pide el motivo y una confirmación antes de anular un pago
+    document.querySelectorAll('.form-anular').forEach(form => {
+        form.addEventListener('submit', evento => {
+            const numero = form.dataset.numero;
+            const motivo = prompt('Motivo de la anulación del pago N.º ' + numero + ':');
+            if (motivo === null) {
+                evento.preventDefault();
+                return;
+            }
+            if (motivo.trim() === '') {
+                alert('Debes indicar el motivo de la anulación.');
+                evento.preventDefault();
+                return;
+            }
+            if (!confirm('¿Anular el pago N.º ' + numero + '? La mensualidad quedará pendiente de pago.')) {
+                evento.preventDefault();
+                return;
+            }
+            form.querySelector('input[name=motivo]').value = motivo.trim();
+        });
+    });
+</script>
+</body>
+</html>

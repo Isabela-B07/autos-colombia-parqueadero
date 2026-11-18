@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.autoscolombia.parqueadero.excepcion.ClienteInactivoException;
+import com.autoscolombia.parqueadero.excepcion.MensualidadSinPagoException;
 
 @Controller
 public class MovimientoController {
@@ -50,7 +51,8 @@ public class MovimientoController {
                     + "Se registró una novedad para el administrador.");
             }
         } catch (PlacaInvalidaException | MensualidadVencidaException
-                 | IngresoActivoException | ClienteInactivoException e) {
+                 | IngresoActivoException | ClienteInactivoException
+                 | MensualidadSinPagoException e) {
             mensajes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/entrada";

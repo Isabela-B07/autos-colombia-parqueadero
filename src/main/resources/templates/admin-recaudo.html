@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Recaudo - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('recaudo')}"></div>
+
+    <main class="contenido">
+        <h1>Recaudo</h1>
+        <p class="descripcion">Total cobrado en un rango de fechas (no cuenta los pagos anulados)</p>
+
+        <div th:if="${error}" class="mensaje error" th:text="${error}"></div>
+
+        <form th:action="@{/admin/recaudo}" method="get" class="filtros-historial filtros-celdas">
+            <div>
+                <label for="desde">Desde</label>
+                <input type="date" id="desde" name="desde" class="campo-form" th:value="${desde}" required>
+            </div>
+            <div>
+                <label for="hasta">Hasta</label>
+                <input type="date" id="hasta" name="hasta" class="campo-form" th:value="${hasta}" required>
+            </div>
+            <button type="submit" class="boton-buscar">Consultar</button>
+            <a class="boton-limpiar" th:href="@{/admin/recaudo}">Limpiar</a>
+        </form>
+
+        <section class="tarjeta-form" th:if="${recaudo != null}">
+            <h2>Resultado</h2>
+            <p>
+                <strong>Total recaudado:</strong>
+                <span th:text="'$ ' + ${#numbers.formatDecimal(recaudo.total(), 1, 'POINT', 0, 'COMMA')}"></span>
+            </p>
+            <p><strong>Pagos contados:</strong> <span th:text="${recaudo.cantidad()}"></span></p>
+
+            <table class="tabla">
+                <thead>
+                    <tr>
+                        <th>Medio de pago</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="m : ${recaudo.porMedio()}">
+                        <td th:text="${m.medio()}"></td>
+                        <td th:text="${m.cantidad()}"></td>
+                        <td th:text="'$ ' + ${#numbers.formatDecimal(m.total(), 1, 'POINT', 0, 'COMMA')}"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p th:if="${recaudo.cantidad() == 0}">No hay pagos activos en ese rango de fechas.</p>
+        </section>
+    </main>
+
+</div>
+</body>
+</html>

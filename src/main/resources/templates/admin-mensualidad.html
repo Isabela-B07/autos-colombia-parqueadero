@@ -31,6 +31,52 @@
                       th:text="${estado == 'VIGENTE'} ? 'Vigente' : (${estado == 'VENCIDA'} ? 'Vencida' : 'Sin mensualidad')"></span>
             </div>
         </section>
+                <!-- Pago de la mensualidad (Iteración 3: CU-25 y CU-26) -->
+        <section class="tarjeta-form" th:if="${pago.estado() != 'SIN_MENSUALIDAD'}">
+            <h2>Pago de la mensualidad</h2>
+            <div class="datos-cliente">
+                <div><span>Periodo</span><strong th:text="${pago.periodo()}"></strong></div>
+                <div th:if="${pago.valor() != null}">
+                    <span th:text="${pago.estado() == 'PAGADA'} ? 'Valor pagado' : 'Valor a pagar'"></span>
+                    <strong th:text="'$ ' + ${#numbers.formatDecimal(pago.valor(), 1, 'POINT', 0, 'COMMA')}"></strong>
+                </div>
+                <span class="etiqueta-estado"
+                      th:classappend="${pago.estado() == 'PAGADA'} ? 'vigente' : 'pendiente'"
+                      th:text="${pago.estado() == 'PAGADA'} ? 'Pagada' : 'Pendiente de pago'"></span>
+            </div>
+
+            <!-- Pendiente, pero falta configurar una tarifa -->
+            <div class="mensaje alerta" style="margin-top: 16px;"
+                 th:if="${pago.estado() == 'PENDIENTE' and pago.valor() == null}">
+                Falta configurar una tarifa para calcular el valor.
+                <a th:href="@{/admin/tarifas}">Ir a Tarifas</a>
+            </div>
+
+            <!-- Pendiente: formulario para registrar el pago -->
+            <form th:if="${pago.estado() == 'PENDIENTE' and pago.valor() != null}"
+                  th:action="@{/admin/clientes/{id}/mensualidad/pago(id=${cliente.idUsuario})}"
+                  method="post" style="margin-top: 16px;">
+                <div class="rejilla-form">
+                    <div>
+                        <label for="medio">Medio de pago *</label>
+                        <select id="medio" name="medio" class="campo-form" required>
+                            <option value="">Selecciona...</option>
+                            <option th:each="m : ${medios}" th:value="${m.name()}"
+                                    th:text="${m.name() == 'EFECTIVO'} ? 'Efectivo' : (${m.name() == 'TRANSFERENCIA'} ? 'Transferencia' : 'Tarjeta')"></option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="referencia">Referencia (opcional)</label>
+                        <input type="text" id="referencia" name="referencia" class="campo-form"
+                               maxlength="50" placeholder="Ej. número de transferencia">
+                    </div>
+                </div>
+                <p class="nota-form">El valor lo calcula el sistema: suma la tarifa de cada vehículo del cliente.</p>
+                <div class="botones-form" style="margin-top: 18px;">
+                    <button type="submit" class="boton">Registrar pago</button>
+                </div>
+            </form>
+        </section>
 
         <!-- Caso A: sin mensualidad -> registrar -->
         <section class="tarjeta-form" th:if="${info.situacion() == 'SIN_MENSUALIDAD'}">

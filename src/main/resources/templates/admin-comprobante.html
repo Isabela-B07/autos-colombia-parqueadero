@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Comprobante de pago - Autos Colombia</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+<div class="layout">
+
+    <div th:replace="~{fragmentos :: menu('pagos')}"></div>
+
+    <main class="contenido">
+        <a class="enlace-volver no-imprimir" th:href="@{/admin/pagos}">← Volver a pagos</a>
+        <h1>Comprobante de pago</h1>
+        <p class="descripcion">Autos Colombia · Parqueadero por mensualidad</p>
+
+        <div th:if="${exito}" class="mensaje exito no-imprimir" th:text="${exito}"></div>
+
+        <div class="mensaje error comprobante-ancho" th:if="${c.anulado()}">
+            <strong>PAGO ANULADO</strong>
+            el <span th:text="${c.fechaAnulacion()}"></span>
+            por <span th:text="${c.empleadoAnulacion()}"></span>.
+            Motivo: <span th:text="${c.motivoAnulacion()}"></span>
+        </div>
+
+        <section class="tarjeta-form comprobante">
+            <div class="fila"><span>Comprobante N.º</span><strong th:text="${c.numero()}"></strong></div>
+            <div class="fila"><span>Fecha</span><strong th:text="${c.fecha()}"></strong></div>
+            <div class="fila"><span>Cliente</span><strong th:text="${c.cliente()}"></strong></div>
+            <div class="fila"><span>Documento</span><strong th:text="${c.documento()}"></strong></div>
+            <div class="fila"><span>Placas</span><strong th:text="${c.placas()}"></strong></div>
+            <div class="fila"><span>Periodo de la mensualidad</span><strong th:text="${c.periodo()}"></strong></div>
+            <div class="fila"><span>Medio de pago</span><strong th:text="${c.medio()}"></strong></div>
+            <div class="fila" th:if="${c.referencia() != null}">
+                <span>Referencia</span><strong th:text="${c.referencia()}"></strong>
+            </div>
+            <div class="fila"><span>Registrado por</span><strong th:text="${c.empleado()}"></strong></div>
+            <div class="fila total">
+                <span>Valor</span>
+                <strong th:text="'$ ' + ${#numbers.formatDecimal(c.valor(), 1, 'POINT', 0, 'COMMA')}"></strong>
+            </div>
+        </section>
+
+        <div class="botones-form no-imprimir" style="margin-top: 18px;">
+            <button type="button" class="boton" onclick="window.print()">Imprimir</button>
+        </div>
+    </main>
+
+</div>
+</body>
+</html>

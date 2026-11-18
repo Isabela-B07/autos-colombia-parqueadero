@@ -6,17 +6,62 @@
     <div class="menu-marca">Autos Colombia</div>
 
     <nav class="menu-enlaces">
-        <a th:href="@{/panel}" th:classappend="${activo == 'panel'} ? 'activo'">🏠 Panel principal</a>
-        <a th:href="@{/entrada}" th:classappend="${activo == 'entrada'} ? 'activo'">🚗 Registrar entrada</a>
-        <a th:href="@{/salida}" th:classappend="${activo == 'salida'} ? 'activo'">🚪 Registrar salida</a>
-        <a th:href="@{/novedades/registrar}" th:classappend="${activo == 'novedad'} ? 'activo'">📝 Registrar novedad</a>
-        <a th:href="@{/consultas/dentro}" th:classappend="${activo == 'dentro'} ? 'activo'">🚘 Vehículos dentro</a>
-        <a th:href="@{/consultas/celdas}" th:classappend="${activo == 'celdas'} ? 'activo'">▦ Celdas</a>
-        <a th:if="${esAdmin}" th:href="@{/admin/historial}" th:classappend="${activo == 'historial'} ? 'activo'">🕘 Historial</a>
-        <a th:if="${esAdmin}" th:href="@{/admin/novedades}" th:classappend="${activo == 'novedades'} ? 'activo'">⚠️ Novedades</a>
-        <a th:if="${esAdmin}" th:href="@{/admin/clientes}" th:classappend="${activo == 'clientes'} ? 'activo'">👥 Clientes</a>
-        <a th:if="${esAdmin}" th:href="@{/admin/empleados}" th:classappend="${activo == 'empleados'} ? 'activo'">🧑‍💼 Empleados</a>
-        <a th:if="${esAdmin}" th:href="@{/admin/celdas}" th:classappend="${activo == 'gestion-celdas'} ? 'activo'">⚙️ Gestión de celdas</a>
+        <a th:href="@{/panel}" th:classappend="${activo == 'panel'} ? 'activo'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Panel principal
+        </a>
+        <a th:href="@{/entrada}" th:classappend="${activo == 'entrada'} ? 'activo'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Registrar entrada
+        </a>
+        <a th:href="@{/salida}" th:classappend="${activo == 'salida'} ? 'activo'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Registrar salida
+        </a>
+        <a th:href="@{/novedades/registrar}" th:classappend="${activo == 'novedad'} ? 'activo'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Registrar novedad
+        </a>
+        <a th:href="@{/consultas/dentro}" th:classappend="${activo == 'dentro'} ? 'activo'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            Vehículos dentro
+        </a>
+        <a th:href="@{/consultas/celdas}" th:classappend="${activo == 'celdas'} ? 'activo'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Celdas
+        </a>
+        <a th:if="${esAdmin}" th:href="@{/admin/historial}" th:classappend="${activo == 'historial'} ? 'activo'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Historial
+        </a>
+        <a th:if="${esAdmin}" th:href="@{/admin/novedades}" th:classappend="${activo == 'novedades'} ? 'activo'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Novedades
+        </a>
+        <a th:if="${esAdmin}" th:href="@{/admin/clientes}" th:classappend="${activo == 'clientes'} ? 'activo'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Clientes
+        </a>
+        <a th:if="${esAdmin}" th:href="@{/admin/empleados}" th:classappend="${activo == 'empleados'} ? 'activo'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            Empleados
+        </a>
+        <a th:if="${esAdmin}" th:href="@{/admin/celdas}" th:classappend="${activo == 'gestion-celdas'} ? 'activo'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+            Gestión de celdas
+        </a>
+        <a th:if="${esAdmin}" th:href="@{/admin/tarifas}" th:classappend="${activo == 'tarifas'} ? 'activo'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            Tarifas
+        </a>
+        <a th:if="${esAdmin}" th:href="@{/admin/pagos}" th:classappend="${activo == 'pagos'} ? 'activo'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Pagos
+        </a>
+        <a th:if="${esAdmin}" th:href="@{/admin/recaudo}" th:classappend="${activo == 'recaudo'} ? 'activo'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Recaudo
+        </a>
     </nav>
 
     <div class="menu-pie">

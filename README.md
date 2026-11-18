@@ -1,6 +1,8 @@
 # Autos Colombia - Sistema de gestión de parqueadero
 
-Aplicación web para gestionar el parqueadero "Autos Colombia", que presta el servicio por mensualidad. Incluye la **Iteración 1** (entrada y salida de vehículos, Evidencia de aprendizaje 1) y la **Iteración 2** (gestión de usuarios y de celdas, Evidencia de aprendizaje 2) del diseño de un Sistema de información.
+Aplicación web para gestionar el parqueadero "Autos Colombia", que presta el servicio por mensualidad. Incluye la **Iteración 1** (entrada y salida de vehículos, Evidencia de aprendizaje 1), la **Iteración 2** (gestión de usuarios y de celdas, Evidencia de aprendizaje 2) y la **Iteración 3** (gestión de pagos, Evidencia de aprendizaje 3) del diseño de un Sistema de información.
+
+Los cambios de cada iteración están resumidos en [CHANGELOG.md](CHANGELOG.md). Además, el commit de cada iteración detalla las historias de usuario que implementa.
 
 - **Institución:** Institución Universitaria Digital de Antioquia
 - **Programa:** Ingeniería de Software
@@ -14,6 +16,7 @@ Aplicación web para gestionar el parqueadero "Autos Colombia", que presta el se
 - Thymeleaf (pantallas HTML)
 - MySQL 8.0 o superior
 - Maven (incluido mediante `mvnw`, no hay que instalarlo)
+- JUnit 5 y Mockito (pruebas automáticas)
 
 ## Funcionalidades
 ### Iteración 1: entrada y salida de vehículos
@@ -53,6 +56,31 @@ Todas las historias de esta iteración las ejecuta el administrador.
 | HU-22 | CU-22 | Poner una celda en mantenimiento o habilitarla |
 | HU-23 | CU-23 | Listar las celdas filtrando por tipo y estado |
 
+### Iteración 3: gestión de pagos
+
+Todas las pantallas de pagos las usa el administrador. La única regla que afecta al vigilante es la HU-27, que se aplica al registrar una entrada.
+
+| Historia | Casos de uso | Funcionalidad |
+|----------|--------------|---------------|
+| HU-24 | CU-24 | Configurar la tarifa mensual de carro y de moto |
+| HU-25 | CU-25 | Registrar el pago de la mensualidad con su medio de pago (efectivo, transferencia o tarjeta) y una referencia opcional |
+| HU-26 | CU-26 | Consultar el estado de pago de la mensualidad (pagada o pendiente) |
+| HU-27 | CU-27 | Rechazar la entrada de un vehículo cuya mensualidad está vigente pero sin pagar |
+| HU-28 | CU-28 | Ver e imprimir el comprobante de pago |
+| HU-29 | CU-29 | Consultar el historial de pagos filtrando por cliente, fechas y medio de pago |
+| HU-30 | CU-30 | Anular un pago indicando el motivo (el pago no se elimina) |
+| HU-31 | CU-31 | Consultar el total recaudado entre dos fechas, con el desglose por medio de pago |
+
+Reglas de negocio de los pagos:
+
+- Solo se paga la mensualidad, en un único pago completo (no hay abonos). El pago se aplica a la última mensualidad del cliente.
+- La tarifa se configura por tipo de vehículo. El valor a pagar es la suma de la tarifa de cada vehículo del cliente y lo calcula el sistema (no se puede editar).
+- Una mensualidad solo puede tener un pago activo a la vez.
+- Un pago no se elimina: se anula con motivo, fecha y empleado, y la mensualidad vuelve a quedar pendiente de pago. El total recaudado no cuenta los pagos anulados.
+- Para registrar una entrada, la mensualidad debe estar vigente **y pagada**. Un vehículo que ya está dentro siempre puede salir.
+- Orden de las validaciones al ingresar: cliente inactivo, mensualidad vencida y, por último, mensualidad sin pago.
+- Los valores de dinero se guardan como `DECIMAL(12,2)` y se manejan con `BigDecimal`.
+
 ## Requisitos previos
 
 1. JDK instalado (`java -version`)
@@ -70,9 +98,10 @@ cd autos-colombia-parqueadero
 
 ### 2. Crear la base de datos
 
-Ejecuta el script SQL disponible en este enlace (por ejemplo, desde MySQL Workbench): https://drive.google.com/file/d/1BX3_kQmAg42a6xDaam7LfuSQ8NBMSrT0/view?usp=sharing
+Se ejecutan dos scripts, en este orden (por ejemplo, desde MySQL Workbench):
 
-El script crea la base de datos `autos_colombia` con todas sus tablas.
+1. **Script base (Iteraciones 1 y 2):** https://drive.google.com/file/d/1BX3_kQmAg42a6xDaam7LfuSQ8NBMSrT0/view?usp=sharing. Crea la base de datos `autos_colombia` con sus tablas.
+2. **Script de la Iteración 3:** https://drive.google.com/file/d/1DwnbHtf-7XHY4EfOQNoXSb61iKSeIazM/view?usp=sharing. Crea las tablas `tarifa` y `pago`, el disparador que impide eliminar pagos, las tarifas iniciales (carro $150.000 y moto $60.000) y un pago en efectivo para cada mensualidad que ya existía, para que los datos anteriores sigan funcionando.
 
 ### 3. Configurar la conexión
 
@@ -98,6 +127,14 @@ La primera vez descarga Maven y las dependencias, así que puede tardar unos min
 http://localhost:8080
 ```
 
+### 5. Ejecutar las pruebas automáticas
+
+```
+./mvnw test
+```
+
+Las pruebas usan JUnit 5 y Mockito y no necesitan la base de datos. Cubren las reglas de negocio de las Iteraciones 2 y 3: formato de placa, mensualidades, pagos y recaudo.
+
 ## Datos de prueba
 
 Al arrancar con el perfil `local`, el sistema crea datos de prueba si no existen (solo para desarrollo).
@@ -117,6 +154,8 @@ Al arrancar con el perfil `local`, el sistema crea datos de prueba si no existen
 | `XYZ12A` | Moto | Vigente |
 | `DEF456` | Carro | Vencida (se rechaza la entrada) |
 
+Desde la Iteración 3, un vehículo con mensualidad vigente solo puede ingresar si esa mensualidad está pagada. Si en Clientes aparece como **Pendiente**, el administrador registra el pago en la pantalla de Mensualidad del cliente.
+
 **Celdas:** `C01` a `C05` (carros), `M01` a `M03` (motos) y `C06` en mantenimiento.
 
 ## Pantallas y permisos
@@ -132,11 +171,15 @@ Al arrancar con el perfil `local`, el sistema crea datos de prueba si no existen
 | Celdas | `/consultas/celdas` | Vigilante y administrador |
 | Historial | `/admin/historial` | Solo administrador |
 | Consulta de novedades | `/admin/novedades` | Solo administrador |
-| Clientes | `/admin/clientes` | Solo administrador |
+| Clientes (incluye la columna Pago) | `/admin/clientes` | Solo administrador |
 | Registrar y editar cliente | `/admin/clientes/nuevo` y `/admin/clientes/{id}/editar` | Solo administrador |
-| Mensualidad del cliente | `/admin/clientes/{id}/mensualidad` | Solo administrador |
+| Mensualidad del cliente (incluye registrar el pago) | `/admin/clientes/{id}/mensualidad` | Solo administrador |
 | Empleados | `/admin/empleados` | Solo administrador |
 | Gestión de celdas | `/admin/celdas` | Solo administrador |
+| Tarifas | `/admin/tarifas` | Solo administrador |
+| Pagos (historial y anular) | `/admin/pagos` | Solo administrador |
+| Comprobante de pago | `/admin/pagos/{id}` | Solo administrador |
+| Recaudo | `/admin/recaudo` | Solo administrador |
 
 ## Arquitectura
 
@@ -146,29 +189,46 @@ Aplicación web por capas. El código fluye en una sola dirección: `controlador
 src/main/java/com/autoscolombia/parqueadero
 ├── modelo        Entidades y enumeraciones (Usuario, Cliente, Empleado, Vehiculo,
 │                 Mensualidad, Celda, Movimiento, Novedad, Rol, TipoVehiculo,
-│                 EstadoCelda, TipoNovedad)
-├── repositorio   Único acceso a la base de datos (Spring Data JPA)
+│                 EstadoCelda, TipoNovedad). Iteración 3: Tarifa, Pago, MedioPago,
+│                 EstadoPago
+├── repositorio   Único acceso a la base de datos (Spring Data JPA). Iteración 3:
+│                 TarifaRepository, PagoRepository
 ├── servicio      Reglas de negocio. Iteración 1: MovimientoService, UsuarioService,
 │                 CeldaService, NovedadService, ValidacionPlacaService, AuthService,
 │                 DetalleEmpleadoService, DatosIniciales. Iteración 2: ClienteService,
-│                 MensualidadService, EmpleadoService, GestionCeldaService
-├── controlador   Reciben las solicitudes de las pantallas
+│                 MensualidadService, EmpleadoService, GestionCeldaService.
+│                 Iteración 3: TarifaService, PagoService, RecaudoService
+├── controlador   Reciben las solicitudes de las pantallas. Iteración 3:
+│                 TarifaController, PagoController, RecaudoController
 ├── seguridad     Cifrado de contraseñas y configuración de roles
 └── excepcion     Reglas de negocio incumplidas (placa inválida, mensualidad vencida,
                   ingreso activo, sin celda disponible, cliente inactivo,
-                  datos inválidos)
+                  datos inválidos). Iteración 3: mensualidad sin pago
 ```
 
 Las pantallas están en `src/main/resources/templates` (Thymeleaf) y los estilos en `src/main/resources/static/css`.
 
-La Iteración 2 se construyó sobre la misma estructura por capas, sin cambiar la de la Iteración 1. Los cambios en código existente fueron mínimos: `UsuarioService` y `MovimientoController` ahora rechazan el ingreso de un cliente desactivado, se agregaron consultas a los repositorios y se añadieron las opciones de administración al menú.
+### Cambios sobre el código de iteraciones anteriores
+
+Las Iteraciones 2 y 3 se construyeron sobre la misma estructura por capas, sin cambiarla. Los cambios en código existente fueron mínimos:
+
+**Iteración 2**
+- `UsuarioService` y `MovimientoController` rechazan el ingreso de un cliente desactivado.
+- Se agregaron consultas a los repositorios y las opciones de administración al menú.
+
+**Iteración 3**
+- `UsuarioService.validarIngreso` ahora también rechaza el ingreso cuando la mensualidad vigente no tiene un pago activo (`MensualidadSinPagoException`, HU-27).
+- `MovimientoController` muestra ese mensaje al rechazar una entrada. La salida no cambió: un vehículo que ya está dentro siempre puede salir.
+- `ClienteService` agrega el estado de pago a cada fila del listado de clientes, y la pantalla Clientes muestra la nueva columna **Pago**.
+- La pantalla de Mensualidad del cliente tiene una sección nueva para ver el estado de pago y registrar el pago.
+- El menú lateral suma las opciones Tarifas, Pagos y Recaudo, tiene scroll propio con el pie fijo para que quepan todas y usa íconos de línea en lugar de emojis.
 
 **Autenticación:** el inicio de sesión lo ejecuta Spring Security. Consulta al empleado mediante `DetalleEmpleadoService`, compara la contraseña cifrada con BCrypt y aplica los permisos por rol.
 
-**Integridad de los datos:** la base de datos impide dos ingresos activos de una misma placa y que una celda se asigne a dos vehículos a la vez. Los movimientos y las novedades no se eliminan físicamente.
+**Integridad de los datos:** la base de datos impide dos ingresos activos de una misma placa y que una celda se asigne a dos vehículos a la vez. Los movimientos y las novedades no se eliminan físicamente. Desde la Iteración 3, la base de datos también impide dos pagos activos para una misma mensualidad y un disparador impide eliminar pagos: solo se anulan.
 
 ## Documentación del diseño
 
-El diseño completo (requerimientos, historias de usuario, arquitectura, mockups, modelo de datos, casos de uso, diagrama de clases y diagrama de paquetes) está en los documentos de las Evidencias de aprendizaje 1 y 2.
+El diseño completo (requerimientos, historias de usuario, arquitectura, mockups, modelo de datos, casos de uso, diagramas de clases, de paquetes, de secuencia y de componentes, y plan de pruebas) está en los documentos de las Evidencias de aprendizaje 1, 2 y 3.
 
-La Iteración 2 no necesita tablas nuevas: usa las mismas del script.
+Las Iteraciones 1 y 2 usan el script base. La Iteración 3 agrega las tablas `tarifa` y `pago` con su propio script, el segundo enlace del paso 2 de "Cómo ejecutarlo".
